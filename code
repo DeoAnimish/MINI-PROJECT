@@ -1,0 +1,249 @@
+//HTML CODE
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Fare Calculator</title>
+    <link rel="stylesheet" href="permanent.css">
+</head>
+<body>
+    <div id="calculatorSection" class="container">
+        <h1>Income Tax Calculator</h1>
+        <form id="taxForm">
+            <label for="income">Annual Income:</label>
+            <input type="number" id="income" name="income" placeholder="Enter your income" required>
+
+            <label for="rentPaid">Rent Paid (Annually):</label>
+            <input type="number" id="rentPaid" name="rentPaid" placeholder="Enter rent paid annually" required>
+
+            <label for="insurancePaid">Insurance Paid (80C):</label>
+            <input type="number" id="insurancePaid" name="insurancePaid" placeholder="Enter insurance amount" required>
+
+            <label for="homeLoanInterest">Home Loan Interest Paid:</label>
+            <input type="number" id="homeLoanInterest" name="homeLoanInterest" placeholder="Enter home loan interest" required>
+
+            <label for="rentIncome">Rent Income Earned Annually:</label>
+            <input type="number" id="rentIncome" name="rentIncome" placeholder="Enter rent income earned" required>
+
+            <button type="button" id="calculateTax" style="margin-bottom: 20px;">CALCULATE TAX</button>
+            <button type="button" id="taxCalculationsButton">TAX CALCULATIONS</button>
+        </form>
+    </div>
+
+    <div id="summarySection" class="container hidden">
+        <h2>Tax Summary</h2>
+        <p><strong>Annual Income:</strong> ₹<span id="summaryIncome"></span></p>
+        <p><strong>Total Deductions:</strong> ₹<span id="summaryDeductions"></span></p>
+        <p><strong>Taxable Income:</strong> ₹<span id="summaryTaxableIncome"></span></p>
+        <p><strong>Tax Payable:</strong> ₹<span id="summaryTaxPayable"></span></p>
+        <button id="proceedToPayment">Proceed to Payment</button>
+    </div>
+
+    <div id="paymentSection" class="container hidden">
+        <h2>Choose Payment Method</h2>
+        <button id="cardPaymentButton" style="margin-bottom: 20px;">Pay with Card</button>
+        <button id="upiPaymentButton">Pay with UPI</button>
+    </div>
+
+    <div id="cardDetailsSection" class="container hidden">
+        <h2>Enter Card Details</h2>
+        <label for="cardNumber">Card Number:</label>
+        <input type="text" id="cardNumber" placeholder="Enter your card number" maxlength="16">
+        <label for="expiryDate">Expiry Date:</label>
+        <input type="month" id="expiryDate">
+        <label for="cvv">CVV:</label>
+        <input type="password" id="cvv" placeholder="Enter CVV" maxlength="3">
+        <button onclick="alert('Card Payment Successful!')">Submit</button>
+    </div>
+
+    <div id="upiDetailsSection" class="container hidden">
+        <h2>UPI Payment</h2>
+        <p>Scan the QR code or enter your UPI ID:</p>
+        <img src="C:\Users\PANKAJ\Downloads\WhatsApp Image 2024-12-01 at 13.08.34.jpeg" 
+        alt="QR Code" 
+        style="display: block; margin: 20px auto; width: 100px; height: 100px;">
+        <button onclick="alert('UPI Payment Successful!')">Submit</button>
+    </div>
+
+    <script src="permanent.js"></script>
+</body>
+</html>
+
+
+//JAVASCRIPT CODE
+document.getElementById("cardPaymentButton").addEventListener("click", function () {
+    document.getElementById("paymentSection").classList.add("hidden");
+    document.getElementById("cardDetailsSection").classList.remove("hidden");
+    document.body.classList.add("cardDetails-section-active");
+});
+
+document.getElementById("taxCalculationsButton").addEventListener("click", function () {
+    window.location.href = "taxcalculationpage.html";
+});
+
+document.getElementById("upiPaymentButton").addEventListener("click", function () {
+    document.getElementById("paymentSection").classList.add("hidden");
+    document.getElementById("upiDetailsSection").classList.remove("hidden");
+    document.body.classList.add("upiDetails-section-active");
+});
+
+document.getElementById("calculateTax").addEventListener("click", function () {
+    const annualIncome = parseFloat(document.getElementById("income").value) || 0;
+    const rentPaid = parseFloat(document.getElementById("rentPaid").value) || 0;
+    const insurancePaid = parseFloat(document.getElementById("insurancePaid").value) || 0;
+    const homeLoanInterest = parseFloat(document.getElementById("homeLoanInterest").value) || 0;
+    const rentIncome = parseFloat(document.getElementById("rentIncome").value) || 0;
+
+    const totalDeductions = rentPaid + insurancePaid + homeLoanInterest;
+    const taxableIncome = annualIncome - totalDeductions + rentIncome;
+    let calculatedTax = 0;
+
+    if (taxableIncome <= 300000) {
+        calculatedTax = 0; 
+    } else if (taxableIncome <= 600000) {
+        calculatedTax = (taxableIncome - 300000) * 0.05;
+    } else if (taxableIncome <= 900000) {
+        calculatedTax = 15000 + (taxableIncome - 600000) * 0.1; 
+    } else if (taxableIncome <= 1200000) {
+        calculatedTax = 45000 + (taxableIncome - 900000) * 0.15; 
+    } else if (taxableIncome <= 1500000) {
+        calculatedTax = 90000 + (taxableIncome - 1200000) * 0.2;
+    } else {
+        calculatedTax = 150000 + (taxableIncome - 1500000) * 0.3;
+    }
+    
+
+    document.getElementById("summaryIncome").innerText = annualIncome.toFixed(2);
+    document.getElementById("summaryDeductions").innerText = totalDeductions.toFixed(2);
+    document.getElementById("summaryTaxableIncome").innerText = taxableIncome.toFixed(2);
+    document.getElementById("summaryTaxPayable").innerText = calculatedTax.toFixed(2);
+
+    document.getElementById("calculatorSection").classList.add("hidden");
+    document.getElementById("summarySection").classList.remove("hidden");
+    document.body.classList.add("summary-section-active");
+    document.body.classList.remove("payment-section-active");
+});
+
+document.getElementById("proceedToPayment").addEventListener("click", function () {
+    document.getElementById("summarySection").classList.add("hidden");
+    document.getElementById("paymentSection").classList.remove("hidden");
+    document.body.classList.add("payment-section-active");
+    document.body.classList.remove("summary-section-active");
+});
+
+//CSS CODE
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('file:///C:/Users/PANKAJ/Downloads/pexels-rdne-7821685.jpg');             
+    background-size: 100% 100%;
+}
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+h1, h2 {
+    text-align: center;
+    color: #000000;
+}
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #000000;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #003c82;
+}
+.hidden {
+    display: none;
+}
+
+/* Background for the first three sections */
+body.summary-section-active {
+    background-image: url('https://media.istockphoto.com/id/1312818032/photo/lots-of-multi-coloured-cubes-moving-in-space-to-come-together-to-form-an-abstract-thumbs-up.jpg?s=170667a&w=0&k=20&c=iSS8YG4NFOm9x4cLMB80oUkmTrKkilVyDV-fcrdjIAM=');             
+    background-size: 100% 150%;
+}
+body.payment-section-active {
+    background-image: url('https://media.istockphoto.com/id/1312818032/photo/lots-of-multi-coloured-cubes-moving-in-space-to-come-together-to-form-an-abstract-thumbs-up.jpg?s=170667a&w=0&k=20&c=iSS8YG4NFOm9x4cLMB80oUkmTrKkilVyDV-fcrdjIAM=');             
+    background-size: 100% 200%;
+}
+body.cardDetails-section-active {
+    background-image: url('https://media.istockphoto.com/id/1312818032/photo/lots-of-multi-coloured-cubes-moving-in-space-to-come-together-to-form-an-abstract-thumbs-up.jpg?s=170667a&w=0&k=20&c=iSS8YG4NFOm9x4cLMB80oUkmTrKkilVyDV-fcrdjIAM=');             
+    background-size: 100% 130%;
+}
+body.upiDetails-section-active {
+    background-image: url('https://media.istockphoto.com/id/1312818032/photo/lots-of-multi-coloured-cubes-moving-in-space-to-come-together-to-form-an-abstract-thumbs-up.jpg?s=170667a&w=0&k=20&c=iSS8YG4NFOm9x4cLMB80oUkmTrKkilVyDV-fcrdjIAM=');             
+    background-size: 100% 150%;
+}
+
+//HTML CODE (for tax calculation process according to new tax regime)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Calculations</title>
+    <style>
+        body {
+            background-image: url('file:///C:/Users/PANKAJ/Downloads/pexels-rdne-7821685.jpg');             
+            background-size: 100% 115%;
+            font-family: Arial, sans-serif;
+            color: #000000;
+            text-align: center;
+            margin: 0;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #003c82;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <img src="C:\Users\PANKAJ\Pictures\Screenshots\Screenshot 2024-12-02 181438.png" 
+        style="display: block; margin: 20px auto; width: 333px; height: 333px;">
+    </div>
+    <button onclick="window.history.back()">Go Back</button>
+</body>
+</html>
